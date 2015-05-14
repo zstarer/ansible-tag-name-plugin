@@ -1,0 +1,63 @@
+- name: Start EC2 Infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    region: us-east-1
+    your_key: Zach
+    tag_name: SampleApp
+
+  tasks:
+    - name: spawn up instances
+      ec2:
+        region: "{{ region }}"
+        key_name: "{{ your_key }}"
+        instance_type: m3.medium
+        image: ami-323b195a
+        wait: yes
+        exact_count:  "{{ instance_count | default(2) }}"
+        instance_tags:
+          Name: "{{ tag_name }}"
+          Application: Sample_App
+          Environment: Development
+        count_tag:
+          Name: Example
+          Environment: Development
+      tags: infra
+
+    - name: 
+      ec2_elb_lb:
+        name: "{{ tag_name }}"
+        state: present
+        region: "{{ region }}"
+        zones:
+          - us-east-1a
+        listeners:
+          - protocol: http
+            load_balancer_port: 80
+            instance_port: 80
+      tags: infra
+
+    - name: Get instance IDs
+      shell: ./return_instance_ids.py {{ tag_name }}
+      register: instance_ids
+      tags: instance_to_elb
+
+    - name: join instance to ELB
+      ec2_elb:
+        instance_id: "{{ item }}"
+        ec2_elbs: "{{ tag_name }}"
+        state: present
+        region: us-east-1
+      with_items:
+        - "{{ instance_ids.stdout_lines }}"
+      tags: instance_to_elb
+
+    - name: register IPs
+      shell: ./return_instance_ips.py {{ tag_name }}
+      register: instance_ips
+      tags: output_ips
+
+    - name: output IPs
+      debug: var=instance_ips.stdout_lines
+      tags: output_ips
