@@ -1,4 +1,4 @@
-## Example ansible plugin to retrieve ansible metadata
+## Example ansible plugin to retrieve EC2 metadata (IPs, i-$instance_id demoed)
 
 A lot of folks in IRC (including myself) have had trouble getting the ec2.py plugin to play nice with tag names, so this is a mostly functioning demo of an alternative pattern of use, and the general model is meant to be pretty easily extended.
 
