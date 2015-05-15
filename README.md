@@ -8,10 +8,12 @@ Change {{ your_key }} to your AWS key. Everything else ought to actually work.
 
 
 1. ansible-playbook -vvv ec2-instances.yml -i /etc/ansible/local --tags infra
-	This starts up 2 EC2 instances and an ELB. Don't forget to tear them down. :)
+
+This starts up 2 EC2 instances and an ELB. Don't forget to tear them down. :)
 
 2. ansible-playbook -vvv ec2-instances.yml -i /etc/ansible/local --tags output_ips
-	This will show you how stdout looks, and you can then run other tasks with these as items.
+
+This will show you how stdout looks, and you can then run other tasks with these as items.
 
 3. ansible-playbook -vvv ec2-instances.yml -i /etc/ansible/local --tags instance_to_elbs
 
